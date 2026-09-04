@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Maaliyadda App</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2563eb">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            primary: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
+  <!-- Google Identity Services (Real Google Sign-In) -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-50 text-gray-900 h-screen w-screen overflow-hidden flex">
+
+  <!-- ================= LOGIN SCREEN ================= -->
+  <div id="login-screen" class="fixed inset-0 bg-gradient-to-br from-primary-700 via-blue-600 to-indigo-800 z-[100] flex items-center justify-center p-4">
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="absolute -top-20 -left-20 w-96 h-96 bg-white/5 rounded-full blur-3xl"></div>
+      <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-white/5 rounded-full blur-3xl"></div>
+    </div>
+    
+    <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
+      <!-- Logo Section -->
+      <div class="bg-gradient-to-r from-primary-600 to-primary-800 px-8 py-10 text-center relative overflow-hidden">
+        <div class="relative z-10">
+          <div class="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <i class="ph-fill ph-chart-line-up text-4xl text-white"></i>
+          </div>
+          <h1 class="text-3xl font-extrabold text-white">Maaliyadda</h1>
+          <p class="text-primary-100 text-sm mt-1">Enterprise Wholesale Ledger</p>
+        </div>
+        <i class="ph-fill ph-chart-polar absolute -right-6 -bottom-6 text-[150px] text-white opacity-5"></i>
+      </div>
+      
+      <!-- Login Form -->
+      <div class="p-8">
+        <h2 class="text-xl font-bold text-gray-800 text-center mb-1">Soo gal Koontadaada</h2>
+        <p class="text-sm text-gray-500 text-center mb-6">Isticmaal Google si aad si badbaado leh u gasho</p>
+        
+        <!-- REAL GOOGLE BUTTON CONTAINER -->
+        <div id="google-button-container" class="flex justify-center w-full min-h-[44px]"></div>
+        <p class="text-[10px] text-center text-gray-400 mt-2">U baahan tahay Client ID si uu u shaqeeyo 100%</p>
+
+        <div class="relative my-6">
+          <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
+          <div class="relative flex justify-center text-xs"><span class="bg-white px-3 text-gray-400 font-semibold">AMA</span></div>
+        </div>
+
+        <form onsubmit="signInWithEmail(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">Email / Gmail</label>
+            <div class="relative">
+              <i class="ph-bold ph-envelope-simple absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+              <input required id="login-email" type="email" placeholder="magacaaga@gmail.com" class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white text-sm font-medium transition-all">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">Password</label>
+            <div class="relative">
+              <i class="ph-bold ph-lock absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+              <input required id="login-password" type="password" placeholder="••••••••" class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white text-sm font-medium transition-all">
+            </div>
+          </div>
+          <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-primary-600/30 transition-colors">
+            Soo Gal
+          </button>
+        </form>
+
+        <p class="text-xs text-gray-400 text-center mt-6">
+          <i class="ph-fill ph-shield-check text-green-500"></i>
+          Xogtaadu waa ammaan. Waxaan isticmaalnaa encryption.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= SIDEBAR (DESKTOP) ================= -->
+  <aside class="hidden md:flex flex-col w-72 bg-white border-r border-gray-200 z-20">
+    <div class="p-6 flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-primary-600 flex items-center justify-center text-white shadow-lg shadow-primary-600/30">
+        <i class="ph-bold ph-chart-line-up text-xl"></i>
+      </div>
+      <div>
+        <h1 class="font-bold text-lg leading-tight">Maaliyadda</h1>
+        <p class="text-xs text-gray-500 font-medium">Enterprise Ledger</p>
+      </div>
+    </div>
+    
+    <nav class="flex-1 px-4 py-2 space-y-2">
+      <button onclick="navigate('dashboard')" id="nav-desktop-dashboard" class="nav-btn-desktop active w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all text-primary-600 bg-primary-50">
+        <i class="ph-fill ph-squares-four text-xl"></i>
+        Dashboard
+      </button>
+      <button onclick="navigate('customers')" id="nav-desktop-customers" class="nav-btn-desktop w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-gray-500 hover:bg-gray-100 transition-all">
+        <i class="ph-bold ph-users text-xl"></i>
+        Macaamiisha
+      </button>
+      <button onclick="navigate('settings')" id="nav-desktop-settings" class="nav-btn-desktop w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-gray-500 hover:bg-gray-100 transition-all">
+        <i class="ph-bold ph-gear text-xl"></i>
+        Settings
+      </button>
+    </nav>
+    
+    <div class="p-4">
+      <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+            <i class="ph-bold ph-user text-gray-500"></i>
+          </div>
+          <div>
+            <p class="text-sm font-semibold">Admin User</p>
+            <p class="text-xs text-gray-500">Maamulaha Guud</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN CONTENT ================= -->
+  <main class="flex-1 flex flex-col h-full relative w-full">
+    
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-md border-b border-gray-200 px-5 py-4 flex items-center justify-between z-10 sticky top-0">
+      <h2 id="page-title" class="text-xl font-bold text-gray-800">Dashboard</h2>
+      
+      <div class="flex items-center gap-3">
+        <div class="hidden md:flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-200">
+          <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+          <span class="text-xs font-medium text-gray-600" id="header-date">2026-09-04</span>
+        </div>
+        <button class="md:hidden w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
+          <i class="ph-bold ph-bell"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Scrollable Content Area -->
+    <div class="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-8 pb-28 md:pb-8 relative bg-gray-50 no-scrollbar">
+      
+      <!-- === VIEW: DASHBOARD === -->
+      <div id="view-dashboard" class="view-section">
+        
+        <!-- Welcome Card -->
+        <div class="bg-gradient-to-r from-primary-600 to-primary-800 rounded-2xl p-6 text-white mb-6 shadow-lg shadow-primary-600/20 relative overflow-hidden">
+          <div class="relative z-10">
+            <h3 class="text-2xl font-bold mb-1">Soo dhawoo, Maamule! 👋</h3>
+            <p class="text-primary-100 text-sm max-w-md">Halkan waxaad kala socon kartaa dhammaan xogta maaliyadeed ee ganacsigaaga si fudud iyo si degdeg ah.</p>
+          </div>
+          <i class="ph-fill ph-chart-polar absolute -right-4 -bottom-4 text-9xl text-white opacity-10"></i>
+        </div>
+
+        <!-- KPI Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="kpi-container">
+          <!-- Filled by JS -->
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-8">
+          <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
+            <h3 class="font-bold text-gray-800">Dhaqdhaqaaqa Ugu Dambeeyay</h3>
+            <button onclick="navigate('customers')" class="text-sm text-primary-600 font-semibold hover:text-primary-700">Arag Dhammaan</button>
+          </div>
+          <div class="p-0 overflow-x-auto">
+            <table class="w-full text-sm text-left whitespace-nowrap">
+              <thead class="text-xs text-gray-500 bg-gray-50 uppercase font-semibold">
+                <tr>
+                  <th class="px-5 py-3 rounded-tl-lg">Macmiil</th>
+                  <th class="px-5 py-3">Lacagta La Bixiyay</th>
+                  <th class="px-5 py-3">Deynta</th>
+                  <th class="px-5 py-3 rounded-tr-lg">Xaaladda</th>
+                </tr>
+              </thead>
+              <tbody id="recent-table-body" class="divide-y divide-gray-100">
+                <!-- Filled by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- === VIEW: CUSTOMERS === -->
+      <div id="view-customers" class="view-section hidden">
+        
+        <!-- Search & Filter -->
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-6 flex flex-col sm:flex-row gap-3">
+          <div class="relative flex-1">
+            <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></i>
+            <input type="text" id="search-input" placeholder="Raadi magac ama suuq..." class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all text-sm font-medium">
+          </div>
+          <button onclick="openAddModal()" class="bg-primary-600 hover:bg-primary-700 text-white px-5 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-lg shadow-primary-600/30 transition-colors whitespace-nowrap">
+            <i class="ph-bold ph-plus text-lg"></i>
+            Ku dar Macmiil
+          </button>
+        </div>
+
+        <!-- Customer List (Cards for mobile, table style for desktop inside cards) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4" id="customers-list">
+          <!-- Filled by JS -->
+        </div>
+        
+        <!-- Pagination -->
+        <div class="flex justify-between items-center mt-6 p-4 bg-white rounded-2xl shadow-sm border border-gray-100">
+          <span class="text-sm font-medium text-gray-500" id="pagination-info">Bogga 1 ee 10</span>
+          <div class="flex gap-2">
+            <button id="btn-prev" onclick="changePage(-1)" class="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+              <i class="ph-bold ph-caret-left"></i>
+            </button>
+            <button id="btn-next" onclick="changePage(1)" class="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+              <i class="ph-bold ph-caret-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- === VIEW: SETTINGS === -->
+      <div id="view-settings" class="view-section hidden max-w-3xl mx-auto space-y-6">
+        
+        <!-- Profile & Account Section -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+              <i class="ph-bold ph-user text-lg"></i>
+            </div>
+            <h3 class="font-bold text-gray-800 text-lg">Koontada (Account & Security)</h3>
+          </div>
+          <div class="p-6">
+            <div class="flex items-center gap-4 mb-6">
+              <div id="settings-avatar" class="w-16 h-16 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center text-2xl font-bold shadow-inner overflow-hidden">
+                AU
+              </div>
+              <div>
+                <h4 id="settings-user-name" class="font-bold text-gray-900 text-lg">Admin User</h4>
+                <p id="settings-user-email" class="text-sm text-gray-500 font-mono">user@gmail.com</p>
+              </div>
+            </div>
+            
+            <div class="space-y-4">
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
+                <div>
+                  <p class="font-semibold text-gray-800">Two-Factor Authentication (2FA)</p>
+                  <p class="text-xs text-gray-500">Kordhi amniga nidaamkaaga.</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" value="" class="sr-only peer" checked>
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Business Setup Section -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center">
+              <i class="ph-bold ph-storefront text-lg"></i>
+            </div>
+            <h3 class="font-bold text-gray-800 text-lg">Habaynta Ganacsiga (Business Setup)</h3>
+          </div>
+          <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wider">Lacagta (Currency)</label>
+              <select id="setting-currency" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium">
+                <option value="USD">Doolar (USD $)</option>
+                <option value="SOS">Shilin Soomaali (SOS)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wider">Cabbirka (Unit)</label>
+              <select id="setting-unit" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium">
+                <option value="KG">Kilogram (KG)</option>
+                <option value="Tons">Tons (Ton)</option>
+                <option value="Boxes">Boxes (Kartooman)</option>
+              </select>
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wider">Alaabta Ugu Weyn (Main Commodity)</label>
+              <input type="text" id="setting-commodity" value="Moos (Bananas)" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium">
+            </div>
+          </div>
+        </div>
+
+        <!-- System & Notifications Section -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center">
+              <i class="ph-bold ph-bell-ringing text-lg"></i>
+            </div>
+            <h3 class="font-bold text-gray-800 text-lg">Ogaysiisyada & Nidaamka (Alerts)</h3>
+          </div>
+          <div class="p-6 space-y-5">
+            <div>
+              <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wider">Xadka Wakhtiga Deynta (Warning Days)</label>
+              <select id="setting-threshold" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium">
+                <option value="1">1 Maalin kahor dhicitaanka (1 Day before)</option>
+                <option value="2">2 Maalmood kahor (2 Days before)</option>
+                <option value="3">3 Maalmood kahor (3 Days before)</option>
+                <option value="5">5 Maalmood kahor (5 Days before)</option>
+              </select>
+            </div>
+
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
+              <div>
+                <p class="font-semibold text-gray-800">Daar Gateway-ga SMS-ka</p>
+                <p class="text-xs text-gray-500">Si toos ah fariin ugu dir macaamiisha marka deyntu soo dhawaato.</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="setting-sms" class="sr-only peer" checked>
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Data Management Section -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
+              <i class="ph-bold ph-database text-lg"></i>
+            </div>
+            <h3 class="font-bold text-gray-800 text-lg">Maamulka Xogta (Data Tools)</h3>
+          </div>
+          <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <button onclick="showToast('Xogtaadii waa la keydiyay (Backup complete)!')" class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-gray-200 bg-gray-50 hover:bg-gray-100 transition-colors text-gray-700">
+              <i class="ph-bold ph-cloud-arrow-up text-2xl text-green-600"></i>
+              <span class="font-semibold text-sm">Keydso Xogta (Cloud Backup)</span>
+            </button>
+            <button onclick="showToast('Waxaa lagusoo dejinayaa Excel (Downloading Excel...)')" class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-gray-200 bg-gray-50 hover:bg-gray-100 transition-colors text-gray-700">
+              <i class="ph-bold ph-file-csv text-2xl text-blue-600"></i>
+              <span class="font-semibold text-sm">La deg Xogta (Export CSV/Excel)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Download App Section -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center">
+              <i class="ph-bold ph-device-mobile text-lg"></i>
+            </div>
+            <h3 class="font-bold text-gray-800 text-lg">Soo Dagso App-ka (Download App)</h3>
+          </div>
+          <div class="p-6">
+            <div class="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-6 text-white relative overflow-hidden">
+              <div class="relative z-10">
+                <h4 class="font-bold text-lg mb-1">📱 Ku rakib telefoonkaaga!</h4>
+                <p class="text-indigo-100 text-sm mb-4">Soo dagso app-ka si aad u isticmaasho xitaa internet la'aan.</p>
+                <button id="btn-install-app" onclick="installApp()" class="bg-white text-indigo-700 font-bold px-6 py-3 rounded-xl shadow-lg hover:bg-indigo-50 transition-colors flex items-center gap-2">
+                  <i class="ph-bold ph-download-simple text-xl"></i>
+                  Soo Dagso Hadda
+                </button>
+              </div>
+              <i class="ph-fill ph-device-mobile absolute -right-4 -bottom-4 text-[120px] text-white opacity-10"></i>
+            </div>
+            <p class="text-xs text-gray-500 mt-3 flex items-center gap-1">
+              <i class="ph-fill ph-info text-gray-400"></i>
+              Android: Chrome → "Add to Home Screen" | iPhone: Safari → "Add to Home Screen"
+            </p>
+          </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="mt-8 mb-4">
+          <button onclick="saveSettings()" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary-600/30 transition-colors flex items-center justify-center gap-2 text-lg">
+            <i class="ph-bold ph-floppy-disk"></i>
+            Xafid Isbedelada Dhammaan (Save Settings)
+          </button>
+        </div>
+
+        <!-- Logout Button -->
+        <div class="mb-4">
+          <button onclick="logoutUser()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-bold py-4 rounded-xl border-2 border-red-200 transition-colors flex items-center justify-center gap-2 text-lg">
+            <i class="ph-bold ph-sign-out"></i>
+            Ka Bax (Logout)
+          </button>
+        </div>
+        
+        <div class="text-center text-xs text-gray-400 font-medium mt-8 pb-8">
+          Enterprise Wholesale Ledger App v4.0 <br>
+          Made for Mobile & Desktop (Enterprise Edition)
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================= MOBILE BOTTOM NAV ================= -->
+    <nav class="md:hidden absolute bottom-0 left-0 w-full bg-white border-t border-gray-200 flex justify-around px-2 py-2 z-30 pb-safe shadow-[0_-10px_20px_rgba(0,0,0,0.03)]">
+      <button onclick="navigate('dashboard')" id="nav-mobile-dashboard" class="nav-btn-mobile flex flex-col items-center p-2 text-primary-600">
+        <div class="relative">
+          <i class="ph-fill ph-squares-four text-2xl mb-1"></i>
+        </div>
+        <span class="text-[10px] font-semibold">Home</span>
+      </button>
+      <button onclick="navigate('customers')" id="nav-mobile-customers" class="nav-btn-mobile flex flex-col items-center p-2 text-gray-400 hover:text-gray-600 transition-colors">
+        <i class="ph-bold ph-users text-2xl mb-1"></i>
+        <span class="text-[10px] font-semibold">Macmiil</span>
+      </button>
+      <button onclick="openAddModal()" class="flex flex-col items-center justify-center p-2 relative -top-2">
+        <div class="w-14 h-14 bg-primary-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-primary-600/40 border-4 border-white">
+          <i class="ph-bold ph-plus text-2xl"></i>
+        </div>
+      </button>
+      <button onclick="navigate('settings')" id="nav-mobile-settings" class="nav-btn-mobile flex flex-col items-center p-2 text-gray-400 hover:text-gray-600 transition-colors">
+        <i class="ph-bold ph-gear text-2xl mb-1"></i>
+        <span class="text-[10px] font-semibold">Settings</span>
+      </button>
+    </nav>
+  </main>
+
+  <!-- ================= ADD CUSTOMER MODAL ================= -->
+  <div id="modal-overlay" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-50 hidden flex items-end md:items-center justify-center transition-opacity opacity-0">
+    <div id="add-modal" class="bg-white w-full md:w-[600px] md:rounded-3xl rounded-t-3xl max-h-[90vh] flex flex-col overflow-hidden modal-content shadow-2xl">
+      <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+        <h3 class="font-bold text-lg text-gray-800">Diiwaali Macmiil Cusub</h3>
+        <button onclick="closeAddModal()" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200 transition-colors">
+          <i class="ph-bold ph-x"></i>
+        </button>
+      </div>
+      
+      <div class="p-6 overflow-y-auto no-scrollbar flex-1">
+        <form id="add-form" onsubmit="submitForm(event)" class="space-y-4">
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">Magaca Buuxa</label>
+              <input required id="in-name" type="text" placeholder="Tusaale: Cabdi Nuur" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">Telefoonka</label>
+              <input required id="in-phone" type="tel" placeholder="+2526..." class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium font-mono">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">Suuqa</label>
+            <input required id="in-location" type="text" list="market-list" placeholder="Tusaale: Bakaaro" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium">
+            <datalist id="market-list">
+              <option value="Bakaaro"></option>
+              <option value="Suuq Bacaad"></option>
+              <option value="Madiina"></option>
+              <option value="Kaxda"></option>
+              <option value="Xamar Weyne"></option>
+            </datalist>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">Miisaanka (<span id="lbl-unit">KG</span>)</label>
+              <input required id="in-weight" type="number" step="0.01" min="0" placeholder="0.00" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium font-mono">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">Qiimaha/Unug ($)</label>
+              <input required id="in-rate" type="number" step="0.0001" min="0" placeholder="0.00" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium font-mono">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">La Bixiyay Hada ($)</label>
+              <input id="in-paid" type="number" step="0.01" min="0" value="0" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium font-mono">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">Taariikhda Bixinta (Due)</label>
+              <input required id="in-due" type="date" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 font-medium font-mono">
+            </div>
+          </div>
+
+          <div class="bg-primary-50 rounded-xl p-4 flex justify-between items-center mt-2 border border-primary-100">
+            <span class="text-sm font-semibold text-primary-700">Wadarta (Total):</span>
+            <span id="form-total" class="font-bold text-lg text-primary-700 font-mono">$0.00</span>
+          </div>
+
+          <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-primary-600/30 transition-colors mt-6">
+            Keydi Xogta
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TOAST NOTIFICATION ================= -->
+  <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-[60] flex flex-col gap-2 w-11/12 max-w-sm pointer-events-none">
+    <!-- Toasts injected here -->
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js');
+      });
+    }
+  </script>
+</body>
+</html>
